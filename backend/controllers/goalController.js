@@ -17,21 +17,41 @@ const setGoal = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("Please add text field");
   }
-  res.json({ message: "Set Goal" });
+
+  const goal = await Goal.create({
+    text: req.body.text,
+  });
+  res.json(goal);
 });
 
 // @desc    Update Goal
 // @route   PUT /api/goals/:id
 // @access  Private
 const updateGoal = asyncHandler(async (req, res) => {
-  res.json({ message: `Update Goal ${req.params.id}` });
+  const goal = await Goal.findById(req.params.id);
+
+  if (!goal) {
+    res.status(400);
+    throw new Error("Goal not found");
+  }
+  const updateGoal = await Goal.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  });
+  res.json(updateGoal);
 });
 
 // @desc    Delete Goal
 // @route   DELETE /api/goals/:id
 // @access  Private
 const deleteGoal = asyncHandler(async (req, res) => {
-  res.json({ message: `Delete Goal ${req.params.id}` });
+  const goal = await Goal.findById(req.params.id);
+
+  if (!goal) {
+    res.status(400);
+    throw new Error("Goal not found");
+  }
+  await Goal.deleteOne({ _id: req.params.id });
+  res.json({ id: req.params.id });
 });
 
 module.exports = {
